@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LocalizedQuery, prisma } from '@/lib/db';
+import { LocalizedQuery } from '@/lib/db';
 
 export const runtime = 'edge';
 
@@ -10,7 +10,7 @@ export async function GET(
 ) {
   try {
     const { locale } = await params;
-    
+
     // 获取查询参数
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
@@ -18,14 +18,30 @@ export async function GET(
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // 验证语言支持
-    const supportedLocales = ["en", "de", "ja", "fr", "th", "es", "ru", "pt", "it", "nl", "pl", "ko", "id"];
+    const supportedLocales = [
+      'en',
+      'de',
+      'ja',
+      'fr',
+      'th',
+      'es',
+      'ru',
+      'pt',
+      'it',
+      'nl',
+      'pl',
+      'ko',
+      'id',
+    ];
     const validLocale = supportedLocales.includes(locale) ? locale : 'en';
+
+    // 使用validLocale避免未使用警告
 
     // 获取本地化产品列表
     const products = await LocalizedQuery.getLocalizedProducts(validLocale, {
       category: category || undefined,
       limit,
-      offset
+      offset,
     });
 
     // 获取产品分类
@@ -45,17 +61,16 @@ export async function GET(
           features: product.translation?.features || {},
           image: `https://image.topqfiller.com/products/${product.sku.toLowerCase()}.webp`,
           createdAt: product.createdAt,
-          updatedAt: product.updatedAt
+          updatedAt: product.updatedAt,
         })),
         categories,
         pagination: {
           total: products.length,
           limit,
-          offset
-        }
-      }
+          offset,
+        },
+      },
     });
-
   } catch (error) {
     console.error('Error fetching products:', error);
     return NextResponse.json(
@@ -75,8 +90,24 @@ export async function POST(
     const body = await request.json();
 
     // 验证语言支持
-    const supportedLocales = ["en", "de", "ja", "fr", "th", "es", "ru", "pt", "it", "nl", "pl", "ko", "id"];
+    const supportedLocales = [
+      'en',
+      'de',
+      'ja',
+      'fr',
+      'th',
+      'es',
+      'ru',
+      'pt',
+      'it',
+      'nl',
+      'pl',
+      'ko',
+      'id',
+    ];
     const validLocale = supportedLocales.includes(locale) ? locale : 'en';
+
+    // 使用validLocale避免未使用警告
 
     // 验证请求数据
     const { sku, price, inventory, category, translations } = body;
@@ -94,14 +125,13 @@ export async function POST(
       price: parseFloat(price),
       inventory: parseInt(inventory) || 0,
       category,
-      translations: translations || []
+      translations: translations || [],
     });
 
     return NextResponse.json({
       success: true,
-      data: product
+      data: product,
     });
-
   } catch (error) {
     console.error('Error creating product:', error);
     return NextResponse.json(

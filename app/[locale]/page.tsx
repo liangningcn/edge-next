@@ -1,16 +1,10 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 import { Link } from '@/components/Link';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
-interface HomePageProps {
-  params: Promise<{ locale: string }>;
-}
-
-export const runtime = 'edge';
-
-export default async function Home({ params }: HomePageProps) {
-  const { locale } = await params;
-  
+export default function Home() {
   const t = useTranslations('common');
   const tNav = useTranslations('navigation');
   const tProducts = useTranslations('products');
@@ -45,18 +39,16 @@ export default async function Home({ params }: HomePageProps) {
         {/* 英雄区域 */}
         <section className="text-center mb-16">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">{t('welcome')}</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            {t('description')}
-          </p>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">{t('description')}</p>
           <div className="flex justify-center space-x-4">
-            <Link 
-              href="/products" 
+            <Link
+              href="/products"
               className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition"
             >
               {tProducts('title')}
             </Link>
-            <Link 
-              href="/contact" 
+            <Link
+              href="/contact"
               className="border border-blue-600 text-blue-600 px-8 py-3 rounded-lg hover:bg-blue-50 transition"
             >
               {t('contact')}
@@ -68,18 +60,40 @@ export default async function Home({ params }: HomePageProps) {
         <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-6 h-6 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <h3 className="text-xl font-semibold mb-2">Premium Quality</h3>
-            <p className="text-gray-600">Highest quality dermal fillers with clinical-grade standards</p>
+            <p className="text-gray-600">
+              Highest quality dermal fillers with clinical-grade standards
+            </p>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <svg
+                className="w-6 h-6 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
               </svg>
             </div>
             <h3 className="text-xl font-semibold mb-2">Safe & Effective</h3>
@@ -88,8 +102,18 @@ export default async function Home({ params }: HomePageProps) {
 
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-6 h-6 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <h3 className="text-xl font-semibold mb-2">Global Standards</h3>
@@ -103,14 +127,18 @@ export default async function Home({ params }: HomePageProps) {
           <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
             {tProducts('description')}
           </p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* 产品卡片示例 */}
             {[
-              { name: "Fine Lines Filler", category: tProducts('category_fine'), price: "$299" },
-              { name: "Dermal Enhancement", category: tProducts('category_derm'), price: "$399" },
-              { name: "Deep Wrinkle Solution", category: tProducts('category_deep'), price: "$499" },
-              { name: "Volume Booster", category: tProducts('category_volume'), price: "$599" }
+              { name: 'Fine Lines Filler', category: tProducts('category_fine'), price: '$299' },
+              { name: 'Dermal Enhancement', category: tProducts('category_derm'), price: '$399' },
+              {
+                name: 'Deep Wrinkle Solution',
+                category: tProducts('category_deep'),
+                price: '$499',
+              },
+              { name: 'Volume Booster', category: tProducts('category_volume'), price: '$599' },
             ].map((product, index) => (
               <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden border">
                 <div className="h-48 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
@@ -131,11 +159,11 @@ export default async function Home({ params }: HomePageProps) {
           </div>
 
           <div className="mt-12">
-            <Link 
-              href="/products" 
+            <Link
+              href="/products"
               className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition"
             >
-              {t('view_all_products') || "View All Products"}
+              {t('view_all_products') || 'View All Products'}
             </Link>
           </div>
         </section>
@@ -152,25 +180,61 @@ export default async function Home({ params }: HomePageProps) {
             <div>
               <h4 className="text-lg font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><Link href="/about" className="hover:text-white">About Us</Link></li>
-                <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
-                <li><Link href="/careers" className="hover:text-white">Careers</Link></li>
+                <li>
+                  <Link href="/about" className="hover:text-white">
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-white">
+                    Contact
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/careers" className="hover:text-white">
+                    Careers
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="text-lg font-semibold mb-4">Support</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><Link href="/help" className="hover:text-white">Help Center</Link></li>
-                <li><Link href="/shipping" className="hover:text-white">Shipping Info</Link></li>
-                <li><Link href="/returns" className="hover:text-white">Returns</Link></li>
+                <li>
+                  <Link href="/help" className="hover:text-white">
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/shipping" className="hover:text-white">
+                    Shipping Info
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/returns" className="hover:text-white">
+                    Returns
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="text-lg font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><Link href="/terms" className="hover:text-white">Terms of Service</Link></li>
-                <li><Link href="/privacy" className="hover:text-white">Privacy Policy</Link></li>
-                <li><Link href="/cookies" className="hover:text-white">Cookie Policy</Link></li>
+                <li>
+                  <Link href="/terms" className="hover:text-white">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy" className="hover:text-white">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/cookies" className="hover:text-white">
+                    Cookie Policy
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>

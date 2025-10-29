@@ -7,14 +7,28 @@ interface EmailConfig {
 }
 
 // 支持的语言列表
-const SUPPORTED_LOCALES = ["en", "de", "ja", "fr", "th", "es", "ru", "pt", "it", "nl", "pl", "ko", "id"] as const;
+const SUPPORTED_LOCALES = [
+  'en',
+  'de',
+  'ja',
+  'fr',
+  'th',
+  'es',
+  'ru',
+  'pt',
+  'it',
+  'nl',
+  'pl',
+  'ko',
+  'id',
+] as const;
 
 // 邮件模板配置
 export const EMAIL_TEMPLATES = {
   // 欢迎邮件
   WELCOME: {
     en: 'welcome-en',
-    de: 'welcome-de', 
+    de: 'welcome-de',
     ja: 'welcome-ja',
     fr: 'welcome-fr',
     th: 'welcome-th',
@@ -25,9 +39,9 @@ export const EMAIL_TEMPLATES = {
     nl: 'welcome-nl',
     pl: 'welcome-pl',
     ko: 'welcome-ko',
-    id: 'welcome-id'
+    id: 'welcome-id',
   },
-  
+
   // 订单确认
   ORDER_CONFIRMATION: {
     en: 'order-confirmation-en',
@@ -42,9 +56,9 @@ export const EMAIL_TEMPLATES = {
     nl: 'order-confirmation-nl',
     pl: 'order-confirmation-pl',
     ko: 'order-confirmation-ko',
-    id: 'order-confirmation-id'
+    id: 'order-confirmation-id',
   },
-  
+
   // 发货通知
   SHIPPING_NOTIFICATION: {
     en: 'shipping-notification-en',
@@ -59,9 +73,9 @@ export const EMAIL_TEMPLATES = {
     nl: 'shipping-notification-nl',
     pl: 'shipping-notification-pl',
     ko: 'shipping-notification-ko',
-    id: 'shipping-notification-id'
+    id: 'shipping-notification-id',
   },
-  
+
   // 密码重置
   PASSWORD_RESET: {
     en: 'password-reset-en',
@@ -76,9 +90,9 @@ export const EMAIL_TEMPLATES = {
     nl: 'password-reset-nl',
     pl: 'password-reset-pl',
     ko: 'password-reset-ko',
-    id: 'password-reset-id'
+    id: 'password-reset-id',
   },
-  
+
   // 咨询回复
   INQUIRY_RESPONSE: {
     en: 'inquiry-response-en',
@@ -93,8 +107,8 @@ export const EMAIL_TEMPLATES = {
     nl: 'inquiry-response-nl',
     pl: 'inquiry-response-pl',
     ko: 'inquiry-response-ko',
-    id: 'inquiry-response-id'
-  }
+    id: 'inquiry-response-id',
+  },
 };
 
 export class EmailService {
@@ -108,7 +122,7 @@ export class EmailService {
    * 验证语言支持
    */
   private validateLocale(locale: string): string {
-    return SUPPORTED_LOCALES.includes(locale as any) ? locale : 'en';
+    return SUPPORTED_LOCALES.includes(locale as string) ? locale : 'en';
   }
 
   /**
@@ -127,7 +141,7 @@ export class EmailService {
     to: string | string[];
     templateType: keyof typeof EMAIL_TEMPLATES;
     locale: string;
-    variables: Record<string, any>;
+    variables: Record<string, unknown>;
     subject?: string;
   }): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
@@ -141,17 +155,16 @@ export class EmailService {
         subject: params.subject,
         variables: {
           ...params.variables,
-          locale: validLocale
-        }
+          locale: validLocale,
+        },
       });
 
       return { success: true, messageId: response.id };
-
     } catch (error) {
       console.error('Error sending email:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
       };
     }
   }
@@ -171,9 +184,9 @@ export class EmailService {
       variables: {
         name: params.name,
         welcome_message: this.getLocalizedMessage('welcome_message', params.locale),
-        get_started_link: `${process.env.NEXT_PUBLIC_SITE_URL}/products`
+        get_started_link: `${process.env.NEXT_PUBLIC_SITE_URL}/products`,
       },
-      subject: this.getLocalizedMessage('welcome_subject', params.locale)
+      subject: this.getLocalizedMessage('welcome_subject', params.locale),
     });
   }
 
@@ -203,9 +216,11 @@ export class EmailService {
         order_date: new Date().toLocaleDateString(params.locale),
         items: params.items,
         order_details_link: `${process.env.NEXT_PUBLIC_SITE_URL}/orders/${params.orderId}`,
-        contact_support_link: `${process.env.NEXT_PUBLIC_SITE_URL}/contact`
+        contact_support_link: `${process.env.NEXT_PUBLIC_SITE_URL}/contact`,
       },
-      subject: this.getLocalizedMessage('order_confirmation_subject', params.locale, { orderId: params.orderId })
+      subject: this.getLocalizedMessage('order_confirmation_subject', params.locale, {
+        orderId: params.orderId,
+      }),
     });
   }
 
@@ -229,10 +244,14 @@ export class EmailService {
         order_id: params.orderId,
         tracking_number: params.trackingNumber,
         shipping_date: new Date().toLocaleDateString(params.locale),
-        estimated_delivery: params.estimatedDelivery || this.getLocalizedMessage('estimated_delivery_default', params.locale),
-        track_order_link: `${process.env.NEXT_PUBLIC_SITE_URL}/tracking/${params.trackingNumber}`
+        estimated_delivery:
+          params.estimatedDelivery ||
+          this.getLocalizedMessage('estimated_delivery_default', params.locale),
+        track_order_link: `${process.env.NEXT_PUBLIC_SITE_URL}/tracking/${params.trackingNumber}`,
       },
-      subject: this.getLocalizedMessage('shipping_notification_subject', params.locale, { orderId: params.orderId })
+      subject: this.getLocalizedMessage('shipping_notification_subject', params.locale, {
+        orderId: params.orderId,
+      }),
     });
   }
 
@@ -246,7 +265,7 @@ export class EmailService {
     locale: string;
   }): Promise<{ success: boolean; messageId?: string; error?: string }> {
     const resetLink = `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password?token=${params.resetToken}`;
-    
+
     return this.sendLocalizedEmail({
       to: params.to,
       templateType: 'PASSWORD_RESET',
@@ -254,9 +273,9 @@ export class EmailService {
       variables: {
         name: params.name,
         reset_link: resetLink,
-        expiry_time: '24 hours'
+        expiry_time: '24 hours',
       },
-      subject: this.getLocalizedMessage('password_reset_subject', params.locale)
+      subject: this.getLocalizedMessage('password_reset_subject', params.locale),
     });
   }
 
@@ -281,9 +300,11 @@ export class EmailService {
         response: params.response,
         agent_name: params.agentName || this.getLocalizedMessage('support_team', params.locale),
         response_date: new Date().toLocaleDateString(params.locale),
-        contact_further_link: `${process.env.NEXT_PUBLIC_SITE_URL}/contact`
+        contact_further_link: `${process.env.NEXT_PUBLIC_SITE_URL}/contact`,
       },
-      subject: this.getLocalizedMessage('inquiry_response_subject', params.locale, { inquiryId: params.inquiryId })
+      subject: this.getLocalizedMessage('inquiry_response_subject', params.locale, {
+        inquiryId: params.inquiryId,
+      }),
     });
   }
 
@@ -298,9 +319,9 @@ export class EmailService {
   }): Promise<{ id: string }> {
     // 在实际部署中，这里会调用Resend API
     // 使用环境变量中的API密钥
-    
+
     // 模拟Resend API调用
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(() => {
         resolve({ id: `mock-${Date.now()}` });
       }, 100);
@@ -310,17 +331,21 @@ export class EmailService {
   /**
    * 获取本地化消息
    */
-  private getLocalizedMessage(key: string, locale: string, variables?: Record<string, any>): string {
+  private getLocalizedMessage(
+    key: string,
+    locale: string,
+    variables?: Record<string, any>
+  ): string {
     const messages = this.getMessages(locale);
     let message = messages[key] || messages[key.replace(/_/g, '-')] || key;
-    
+
     // 替换变量
     if (variables) {
       Object.keys(variables).forEach(variable => {
         message = message.replace(`{${variable}}`, variables[variable]);
       });
     }
-    
+
     return message;
   }
 
@@ -329,38 +354,38 @@ export class EmailService {
    */
   private getMessages(locale: string): Record<string, string> {
     const baseMessages = {
-      'welcome_subject': 'Welcome to TOP-Q Filler',
-      'welcome_message': 'Thank you for joining TOP-Q Filler!',
-      'order_confirmation_subject': 'Order Confirmation - {orderId}',
-      'shipping_notification_subject': 'Your Order #{orderId} Has Shipped',
-      'password_reset_subject': 'Password Reset Request',
-      'inquiry_response_subject': 'Response to Your Inquiry #{inquiryId}',
-      'estimated_delivery_default': '5-7 business days',
-      'support_team': 'Support Team'
+      welcome_subject: 'Welcome to TOP-Q Filler',
+      welcome_message: 'Thank you for joining TOP-Q Filler!',
+      order_confirmation_subject: 'Order Confirmation - {orderId}',
+      shipping_notification_subject: 'Your Order #{orderId} Has Shipped',
+      password_reset_subject: 'Password Reset Request',
+      inquiry_response_subject: 'Response to Your Inquiry #{inquiryId}',
+      estimated_delivery_default: '5-7 business days',
+      support_team: 'Support Team',
     };
 
     // 这里可以添加其他语言的翻译
     const localizedMessages: Record<string, Record<string, string>> = {
       de: {
-        'welcome_subject': 'Willkommen bei TOP-Q Filler',
-        'welcome_message': 'Vielen Dank für Ihre Anmeldung bei TOP-Q Filler!',
-        'order_confirmation_subject': 'Bestellbestätigung - {orderId}',
-        'shipping_notification_subject': 'Ihre Bestellung #{orderId} wurde versandt',
-        'password_reset_subject': 'Anfrage zum Zurücksetzen des Passworts',
-        'inquiry_response_subject': 'Antwort auf Ihre Anfrage #{inquiryId}',
-        'estimated_delivery_default': '5-7 Werktage',
-        'support_team': 'Support-Team'
+        welcome_subject: 'Willkommen bei TOP-Q Filler',
+        welcome_message: 'Vielen Dank für Ihre Anmeldung bei TOP-Q Filler!',
+        order_confirmation_subject: 'Bestellbestätigung - {orderId}',
+        shipping_notification_subject: 'Ihre Bestellung #{orderId} wurde versandt',
+        password_reset_subject: 'Anfrage zum Zurücksetzen des Passworts',
+        inquiry_response_subject: 'Antwort auf Ihre Anfrage #{inquiryId}',
+        estimated_delivery_default: '5-7 Werktage',
+        support_team: 'Support-Team',
       },
       ja: {
-        'welcome_subject': 'TOP-Q Fillerへようこそ',
-        'welcome_message': 'TOP-Q Fillerにご登録いただきありがとうございます！',
-        'order_confirmation_subject': '注文確認 - {orderId}',
-        'shipping_notification_subject': '注文 #{orderId} が発送されました',
-        'password_reset_subject': 'パスワードリセットのリクエスト',
-        'inquiry_response_subject': 'お問い合わせ #{inquiryId} への回答',
-        'estimated_delivery_default': '5-7営業日',
-        'support_team': 'サポートチーム'
-      }
+        welcome_subject: 'TOP-Q Fillerへようこそ',
+        welcome_message: 'TOP-Q Fillerにご登録いただきありがとうございます！',
+        order_confirmation_subject: '注文確認 - {orderId}',
+        shipping_notification_subject: '注文 #{orderId} が発送されました',
+        password_reset_subject: 'パスワードリセットのリクエスト',
+        inquiry_response_subject: 'お問い合わせ #{inquiryId} への回答',
+        estimated_delivery_default: '5-7営業日',
+        support_team: 'サポートチーム',
+      },
       // 可以继续添加其他语言的翻译
     };
 
@@ -372,7 +397,7 @@ export class EmailService {
 export const emailService = new EmailService({
   apiKey: process.env.RESEND_API_KEY || process.env.MAILJET_API_KEY || '',
   fromEmail: process.env.FROM_EMAIL || 'noreply@topqfiller.com',
-  fromName: process.env.FROM_NAME || 'TOP-Q Filler'
+  fromName: process.env.FROM_NAME || 'TOP-Q Filler',
 });
 
 // 导出类型

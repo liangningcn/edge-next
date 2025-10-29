@@ -10,9 +10,23 @@ export async function POST(
 ) {
   try {
     const { locale } = await params;
-    
+
     // 验证语言支持
-    const supportedLocales = ["en", "de", "ja", "fr", "th", "es", "ru", "pt", "it", "nl", "pl", "ko", "id"];
+    const supportedLocales = [
+      'en',
+      'de',
+      'ja',
+      'fr',
+      'th',
+      'es',
+      'ru',
+      'pt',
+      'it',
+      'nl',
+      'pl',
+      'ko',
+      'id',
+    ];
     const validLocale = supportedLocales.includes(locale) ? locale : 'en';
 
     // 获取表单数据
@@ -32,7 +46,10 @@ export async function POST(
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid file type. Only JPEG, PNG, and WebP images are allowed.' },
+        {
+          success: false,
+          error: 'Invalid file type. Only JPEG, PNG, and WebP images are allowed.',
+        },
         { status: 400 }
       );
     }
@@ -56,7 +73,12 @@ export async function POST(
     }
 
     // 上传产品图片到R2
-    const key = await storageService.uploadProductImage(file, productSku, validLocale, imageType as any);
+    const key = await storageService.uploadProductImage(
+      file,
+      productSku,
+      validLocale,
+      imageType as 'main' | 'detail' | 'gallery'
+    );
 
     const url = storageService.getAssetUrl(key);
 
@@ -69,10 +91,9 @@ export async function POST(
         imageType,
         filename: file.name,
         size: file.size,
-        type: file.type
-      }
+        type: file.type,
+      },
     });
-
   } catch (error) {
     console.error('Error uploading product image:', error);
     return NextResponse.json(
@@ -89,9 +110,23 @@ export async function GET(
 ) {
   try {
     const { locale } = await params;
-    
+
     // 验证语言支持
-    const supportedLocales = ["en", "de", "ja", "fr", "th", "es", "ru", "pt", "it", "nl", "pl", "ko", "id"];
+    const supportedLocales = [
+      'en',
+      'de',
+      'ja',
+      'fr',
+      'th',
+      'es',
+      'ru',
+      'pt',
+      'it',
+      'nl',
+      'pl',
+      'ko',
+      'id',
+    ];
     const validLocale = supportedLocales.includes(locale) ? locale : 'en';
 
     // 获取查询参数
@@ -112,10 +147,9 @@ export async function GET(
       success: true,
       data: {
         productSku,
-        images
-      }
+        images,
+      },
     });
-
   } catch (error) {
     console.error('Error getting product images:', error);
     return NextResponse.json(

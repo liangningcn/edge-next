@@ -10,19 +10,28 @@ export async function POST(
 ) {
   try {
     const { locale } = await params;
-    
+
     // 验证语言支持
-    const supportedLocales = ["en", "de", "ja", "fr", "th", "es", "ru", "pt", "it", "nl", "pl", "ko", "id"];
+    const supportedLocales = [
+      'en',
+      'de',
+      'ja',
+      'fr',
+      'th',
+      'es',
+      'ru',
+      'pt',
+      'it',
+      'nl',
+      'pl',
+      'ko',
+      'id',
+    ];
     const validLocale = supportedLocales.includes(locale) ? locale : 'en';
 
     // 获取请求数据
     const body = await request.json();
-    const { 
-      to, 
-      templateType, 
-      variables, 
-      subject 
-    } = body;
+    const { to, templateType, variables, subject } = body;
 
     // 验证必填字段
     if (!to || !templateType) {
@@ -36,7 +45,10 @@ export async function POST(
     const validTemplateTypes = Object.keys(EMAIL_TEMPLATES);
     if (!validTemplateTypes.includes(templateType)) {
       return NextResponse.json(
-        { success: false, error: `Invalid template type. Must be one of: ${validTemplateTypes.join(', ')}` },
+        {
+          success: false,
+          error: `Invalid template type. Must be one of: ${validTemplateTypes.join(', ')}`,
+        },
         { status: 400 }
       );
     }
@@ -47,7 +59,7 @@ export async function POST(
       templateType: templateType as keyof typeof EMAIL_TEMPLATES,
       locale: validLocale,
       variables: variables || {},
-      subject
+      subject,
     });
 
     if (result.success) {
@@ -56,22 +68,15 @@ export async function POST(
         data: {
           messageId: result.messageId,
           locale: validLocale,
-          templateType
-        }
+          templateType,
+        },
       });
     } else {
-      return NextResponse.json(
-        { success: false, error: result.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ success: false, error: result.error }, { status: 500 });
     }
-
   } catch (error) {
     console.error('Error sending email:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to send email' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to send email' }, { status: 500 });
   }
 }
 
@@ -82,19 +87,33 @@ export async function GET(
 ) {
   try {
     const { locale } = await params;
-    
+
     // 验证语言支持
-    const supportedLocales = ["en", "de", "ja", "fr", "th", "es", "ru", "pt", "it", "nl", "pl", "ko", "id"];
+    const supportedLocales = [
+      'en',
+      'de',
+      'ja',
+      'fr',
+      'th',
+      'es',
+      'ru',
+      'pt',
+      'it',
+      'nl',
+      'pl',
+      'ko',
+      'id',
+    ];
     const validLocale = supportedLocales.includes(locale) ? locale : 'en';
 
     // 获取模板列表
     const templates = Object.entries(EMAIL_TEMPLATES).map(([type, locales]) => ({
       type,
-      name: this.getTemplateDisplayName(type, validLocale),
-      description: this.getTemplateDescription(type, validLocale),
+      name: getTemplateDisplayName(type, validLocale),
+      description: getTemplateDescription(type, validLocale),
       availableLocales: Object.keys(locales),
       currentLocale: validLocale,
-      templateId: locales[validLocale as keyof typeof locales] || locales.en
+      templateId: locales[validLocale as keyof typeof locales] || locales.en,
     }));
 
     return NextResponse.json({
@@ -102,10 +121,9 @@ export async function GET(
       data: {
         templates,
         supportedLocales,
-        currentLocale: validLocale
-      }
+        currentLocale: validLocale,
+      },
     });
-
   } catch (error) {
     console.error('Error fetching email templates:', error);
     return NextResponse.json(
@@ -131,7 +149,7 @@ function getTemplateDisplayName(templateType: string, locale: string): string {
       nl: 'Welkomstmail',
       pl: 'Email powitalny',
       ko: '환영 이메일',
-      id: 'Email Selamat Datang'
+      id: 'Email Selamat Datang',
     },
     ORDER_CONFIRMATION: {
       en: 'Order Confirmation',
@@ -146,13 +164,13 @@ function getTemplateDisplayName(templateType: string, locale: string): string {
       nl: 'Orderbevestiging',
       pl: 'Potwierdzenie zamówienia',
       ko: '주문 확인',
-      id: 'Konfirmasi Pesanan'
+      id: 'Konfirmasi Pesanan',
     },
     SHIPPING_NOTIFICATION: {
       en: 'Shipping Notification',
       de: 'Versandbenachrichtigung',
       ja: '発送通知',
-      fr: 'Notification d\'expédition',
+      fr: "Notification d'expédition",
       th: 'การแจ้งเตือนการจัดส่ง',
       es: 'Notificación de envío',
       ru: 'Уведомление об отправке',
@@ -161,7 +179,7 @@ function getTemplateDisplayName(templateType: string, locale: string): string {
       nl: 'Verzendmelding',
       pl: 'Powiadomienie o wysyłce',
       ko: '배송 알림',
-      id: 'Pemberitahuan Pengiriman'
+      id: 'Pemberitahuan Pengiriman',
     },
     PASSWORD_RESET: {
       en: 'Password Reset',
@@ -176,7 +194,7 @@ function getTemplateDisplayName(templateType: string, locale: string): string {
       nl: 'Wachtwoord opnieuw instellen',
       pl: 'Reset hasła',
       ko: '비밀번호 재설정',
-      id: 'Reset Kata Sandi'
+      id: 'Reset Kata Sandi',
     },
     INQUIRY_RESPONSE: {
       en: 'Inquiry Response',
@@ -191,8 +209,8 @@ function getTemplateDisplayName(templateType: string, locale: string): string {
       nl: 'Reactie op aanvraag',
       pl: 'Odpowiedź na zapytanie',
       ko: '문의 응답',
-      id: 'Tanggapan Pertanyaan'
-    }
+      id: 'Tanggapan Pertanyaan',
+    },
   };
 
   return names[templateType]?.[locale] || names[templateType]?.en || templateType;
@@ -205,7 +223,7 @@ function getTemplateDescription(templateType: string, locale: string): string {
       en: 'Welcome email sent to new users after registration',
       de: 'Willkommens-E-Mail, die an neue Benutzer nach der Registrierung gesendet wird',
       ja: '新規ユーザー登録後に送信されるウェルカムメール',
-      fr: 'Email de bienvenue envoyé aux nouveaux utilisateurs après l\'inscription',
+      fr: "Email de bienvenue envoyé aux nouveaux utilisateurs après l'inscription",
       th: 'อีเมลต้อนรับที่ส่งให้ผู้ใช้ใหม่หลังการลงทะเบียน',
       es: 'Correo de bienvenida enviado a nuevos usuarios después del registro',
       ru: 'Приветственное письмо, отправляемое новым пользователям после регистрации',
@@ -214,8 +232,8 @@ function getTemplateDescription(templateType: string, locale: string): string {
       nl: 'Welkomstmail verzonden naar nieuwe gebruikers na registratie',
       pl: 'Email powitalny wysłany do nowych użytkowników po rejestracji',
       ko: '등록 후 신규 사용자에게 발송되는 환영 이메일',
-      id: 'Email selamat datang yang dikirim ke pengguna baru setelah pendaftaran'
-    }
+      id: 'Email selamat datang yang dikirim ke pengguna baru setelah pendaftaran',
+    },
     // 可以继续添加其他模板的描述
   };
 

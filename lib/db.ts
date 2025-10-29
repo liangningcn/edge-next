@@ -14,7 +14,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 // 多语言查询辅助函数
 export class LocalizedQuery {
-  
   /**
    * 获取本地化产品信息
    */
@@ -23,57 +22,57 @@ export class LocalizedQuery {
       where: { sku },
       include: {
         translations: {
-          where: { 
+          where: {
             OR: [
               { locale }, // 优先请求语言
-              { locale: 'en' } // 回退到英语
-            ]
+              { locale: 'en' }, // 回退到英语
+            ],
           },
           orderBy: {
-            locale: 'desc' // 确保顺序一致
-          }
-        }
-      }
+            locale: 'desc', // 确保顺序一致
+          },
+        },
+      },
     });
   }
 
   /**
    * 获取本地化产品列表
    */
-  static async getLocalizedProducts(locale: string, options?: {
-    category?: string;
-    limit?: number;
-    offset?: number;
-  }) {
+  static async getLocalizedProducts(
+    locale: string,
+    options?: {
+      category?: string;
+      limit?: number;
+      offset?: number;
+    }
+  ) {
     const where = {
       isActive: true,
-      ...(options?.category && { category: options.category })
+      ...(options?.category && { category: options.category }),
     };
 
     const products = await prisma.product.findMany({
       where,
       include: {
         translations: {
-          where: { 
-            OR: [
-              { locale },
-              { locale: 'en' }
-            ]
+          where: {
+            OR: [{ locale }, { locale: 'en' }],
           },
           orderBy: {
-            locale: 'desc'
-          }
-        }
+            locale: 'desc',
+          },
+        },
       },
       take: options?.limit || 100,
       skip: options?.offset || 0,
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
 
     // 处理翻译数据，确保每个产品都有对应的翻译
     return products.map(product => ({
       ...product,
-      translation: product.translations[0] || null
+      translation: product.translations[0] || null,
     }));
   }
 
@@ -84,22 +83,22 @@ export class LocalizedQuery {
     const categories = await prisma.product.findMany({
       where: { isActive: true },
       distinct: ['category'],
-      select: { category: true }
+      select: { category: true },
     });
 
     // 这里可以添加分类名称的本地化映射
     const categoryMap: Record<string, string> = {
-      'fine_lines': 'Fine Lines',
-      'dermal_fillers': 'Dermal Fillers', 
-      'deep_wrinkles': 'Deep Wrinkles',
-      'ultra_deep': 'Ultra Deep',
-      'volume_enhancement': 'Volume Enhancement',
-      'special_formulations': 'Special Formulations'
+      fine_lines: 'Fine Lines',
+      dermal_fillers: 'Dermal Fillers',
+      deep_wrinkles: 'Deep Wrinkles',
+      ultra_deep: 'Ultra Deep',
+      volume_enhancement: 'Volume Enhancement',
+      special_formulations: 'Special Formulations',
     };
 
     return categories.map(cat => ({
       value: cat.category,
-      label: categoryMap[cat.category] || cat.category
+      label: categoryMap[cat.category] || cat.category,
     }));
   }
 
@@ -115,8 +114,8 @@ export class LocalizedQuery {
       locale: string;
       name: string;
       description?: string;
-      features?: any;
-    }>
+      features?: Record<string, unknown>;
+    }>;
   }) {
     return prisma.product.create({
       data: {
@@ -129,30 +128,34 @@ export class LocalizedQuery {
             locale: trans.locale,
             name: trans.name,
             description: trans.description,
-            features: trans.features
-          }))
-        }
+            features: trans.features,
+          })),
+        },
       },
       include: {
-        translations: true
-      }
+        translations: true,
+      },
     });
   }
 
   /**
    * 更新产品翻译
    */
-  static async updateProductTranslation(productId: string, locale: string, data: {
-    name?: string;
-    description?: string;
-    features?: any;
-  }) {
+  static async updateProductTranslation(
+    productId: string,
+    locale: string,
+    data: {
+      name?: string;
+      description?: string;
+      features?: Record<string, unknown>;
+    }
+  ) {
     return prisma.productTranslation.upsert({
       where: {
         productId_locale: {
           productId,
-          locale
-        }
+          locale,
+        },
       },
       update: data,
       create: {
@@ -160,8 +163,8 @@ export class LocalizedQuery {
         locale,
         name: data.name || '',
         description: data.description,
-        features: data.features
-      }
+        features: data.features,
+      },
     });
   }
 }

@@ -1,0 +1,77 @@
+# Cloudflare TOP-Q Filler 项目配置
+name = "topq-filler"
+compatibility_date = "2024-11-11"
+compatibility_flags = ["nodejs_compat", "nodejs_als"]
+pages_build_output_dir = ".vercel/output/static"
+
+# D1 数据库绑定 - 本地开发
+# 使用 --local 标志时，Wrangler 自动创建本地 SQLite 文件
+# 无需创建远程数据库
+[[d1_databases]]
+binding = "DB"
+database_name = "topq-filler-local"
+database_id = "local"  # 本地模式不需要真实的数据库ID
+migrations_dir = "migrations"
+
+# R2 存储桶绑定 - 本地开发（自动模拟）
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "topq-filler-local"
+
+# KV 命名空间 - 本地开发（自动模拟）
+[[kv_namespaces]]
+binding = "KV"
+id = "local"  # 本地模式不需要真实的 KV ID
+
+# 分析引擎数据集
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "topq_analytics"
+
+# 环境变量
+[vars]
+ENVIRONMENT = "local"
+NODE_ENV = "development"
+ANALYTICS_SINK = "log"
+
+# 国际化配置
+SUPPORTED_LOCALES = "en,de,ja,fr,th,es,ru,pt,it,nl,pl,ko,id"
+DEFAULT_LOCALE = "en"
+
+# 速率限制配置
+RATE_LIMIT_ENABLED = "true"
+RATE_LIMIT_MAX_REQUESTS = "100"
+RATE_LIMIT_WINDOW_SECONDS = "60"
+
+# Cloudflare 分析配置
+ANALYTICS_ENABLED = "true"
+
+# 日志配置
+LOG_LEVEL = "INFO"
+LOG_FORMAT = "json"
+LOG_INCLUDE_TIMESTAMP = "true"
+
+# 数据库配置
+DATABASE_QUERY_TIMEOUT = "5000"
+
+# 缓存配置
+CACHE_DEFAULT_TTL = "3600"
+
+# 性能监控配置
+ENABLE_PERFORMANCE_MONITORING = "true"
+SLOW_QUERY_THRESHOLD_MS = "1000"
+
+# 邮件模板配置
+MAILJET_TEMPLATE_EN = "123456"
+MAILJET_TEMPLATE_DE = "123457"
+MAILJET_TEMPLATE_JA = "123458"
+MAILJET_TEMPLATE_FR = "123459"
+MAILJET_TEMPLATE_TH = "123460"
+MAILJET_TEMPLATE_ES = "123461"
+MAILJET_TEMPLATE_RU = "123462"
+MAILJET_TEMPLATE_PT = "123463"
+MAILJET_TEMPLATE_IT = "123464"
+MAILJET_TEMPLATE_NL = "123465"
+MAILJET_TEMPLATE_PL = "123466"
+MAILJET_TEMPLATE_KO = "123467"
+MAILJET_TEMPLATE_ID = "123468"

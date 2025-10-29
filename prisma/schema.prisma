@@ -1,0 +1,160 @@
+// Prisma schema for Cloudflare D1
+// Note: D1 does not support Prisma Migrate
+// Manage database schema via Wrangler D1 migrations (migrations/*.sql)
+// Prisma is used only for type-safe queries
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"  // Used only for Prisma introspection; not actually used
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 用户模型
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  locale    String   @default("en") // 用户语言偏好
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // 关联关系
+  orders    Order[]
+  inquiries Inquiry[]
+
+  @@index([email])
+  @@index([createdAt])
+  @@map("users")
+}
+
+// 产品模型 - 基础信息
+model Product {
+  id          String   @id @default(cuid())
+  sku         String   @unique
+  price       Decimal
+  inventory   Int      @default(0)
+  category    String   // 产品分类
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // 多语言翻译
+  translations ProductTranslation[]
+  
+  // 关联关系
+  orderItems  OrderItem[]
+
+  @@index([sku])
+  @@index([category])
+  @@index([isActive])
+  @@index([createdAt])
+  @@map("products")
+}
+
+// 产品多语言翻译模型
+model ProductTranslation {
+  id          String   @id @default(cuid())
+  product     Product  @relation(fields: [productId], references: [id])
+  productId   String
+  locale      String   // en, de, ja, fr, th, es, ru, pt, it, nl, pl, ko, id
+  name        String
+  description String?
+  features    Json?     // 本地化特性（JSON格式）
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([productId, locale])
+  @@index([locale])
+  @@index([createdAt])
+  @@map("product_translations")
+}
+
+// 订单模型
+model Order {
+  id          String   @id @default(cuid())
+  userId      String
+  status      OrderStatus @default(PENDING)
+  totalAmount Decimal
+  currency    String   @default("USD")
+  
+  // 联系信息
+  customerName  String
+  customerEmail String
+  customerPhone String?
+  
+  // 地址信息
+  shippingAddress Json? // JSON格式存储地址
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // 关联关系
+  user      User      @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+// 订单项模型
+model OrderItem {
+  id        String   @id @default(cuid())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  unitPrice Decimal
+  
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+// 咨询模型
+model Inquiry {
+  id          String   @id @default(cuid())
+  userId      String?
+  name        String
+  email       String
+  phone       String?
+  subject     String
+  message     String
+  locale      String   @default("en")
+  status      InquiryStatus @default(NEW)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // 关联关系
+  user      User?     @relation(fields: [userId], references: [id])
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+  @@map("inquiries")
+}
+
+// 枚举类型
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum InquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}

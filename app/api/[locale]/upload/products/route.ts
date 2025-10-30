@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { storageService } from '@/lib/storage';
 
 export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 
 // POST /api/[locale]/upload/products - 上传产品图片
 export async function POST(

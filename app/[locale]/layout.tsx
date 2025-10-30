@@ -18,7 +18,24 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const { locale } = await params;
 
   // 验证语言支持
-  if (!locales.includes(locale as string)) {
+  if (
+    !locales.includes(
+      locale as
+        | 'en'
+        | 'de'
+        | 'ja'
+        | 'fr'
+        | 'th'
+        | 'es'
+        | 'ru'
+        | 'pt'
+        | 'it'
+        | 'nl'
+        | 'pl'
+        | 'ko'
+        | 'id'
+    )
+  ) {
     notFound();
   }
 

@@ -11,13 +11,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const { id } = await params;
 
     // Validate ID
-    const userId = parseInt(id, 10);
-    if (isNaN(userId)) {
+    if (!id || typeof id !== 'string') {
       throw new ValidationError('Invalid user ID');
     }
 
     // DB operation: query user (with posts)
-    const user = await repos.users.findByIdWithPosts(userId, 10);
+    const user = await repos.users.findByIdWithPosts(id, 10);
 
     // Check whether user exists
     if (!user) {
@@ -34,8 +33,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const { id } = await params;
 
     // Validate ID
-    const userId = parseInt(id, 10);
-    if (isNaN(userId)) {
+    if (!id || typeof id !== 'string') {
       throw new ValidationError('Invalid user ID');
     }
 
@@ -58,13 +56,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     // Check whether user exists
-    const exists = await repos.users.exists(userId);
+    const exists = await repos.users.exists(id);
     if (!exists) {
       throw new ResourceNotFoundError('User');
     }
 
     // DB operation: update user
-    const user = await repos.users.update(userId, {
+    const user = await repos.users.update(id, {
       ...(email && { email }),
       ...(name !== undefined && { name }),
     });
@@ -72,7 +70,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     // Clear cache
     const cache = createCacheClient();
     await cache?.delete('users:all');
-    await cache?.delete(`user:${userId}`);
+    await cache?.delete(`user:${id}`);
 
     return successResponse(user, 'User updated successfully');
   });
@@ -87,24 +85,23 @@ export async function DELETE(
     const { id } = await params;
 
     // Validate ID
-    const userId = parseInt(id, 10);
-    if (isNaN(userId)) {
+    if (!id || typeof id !== 'string') {
       throw new ValidationError('Invalid user ID');
     }
 
     // Check whether user exists
-    const exists = await repos.users.exists(userId);
+    const exists = await repos.users.exists(id);
     if (!exists) {
       throw new ResourceNotFoundError('User');
     }
 
     // DB operation: delete user (cascade delete related posts)
-    await repos.users.delete(userId);
+    await repos.users.delete(id);
 
     // Clear cache
     const cache = createCacheClient();
     await cache?.delete('users:all');
-    await cache?.delete(`user:${userId}`);
+    await cache?.delete(`user:${id}`);
 
     return noContentResponse();
   });

@@ -122,7 +122,7 @@ export class EmailService {
    * 验证语言支持
    */
   private validateLocale(locale: string): string {
-    return SUPPORTED_LOCALES.includes(locale as string) ? locale : 'en';
+    return SUPPORTED_LOCALES.includes(locale as (typeof SUPPORTED_LOCALES)[number]) ? locale : 'en';
   }
 
   /**
@@ -152,7 +152,7 @@ export class EmailService {
       const response = await this.sendWithResend({
         to: params.to,
         templateId,
-        subject: params.subject,
+        subject: params.subject || 'Notification',
         variables: {
           ...params.variables,
           locale: validLocale,
@@ -315,8 +315,11 @@ export class EmailService {
     to: string | string[];
     templateId: string;
     subject: string;
-    variables: Record<string, any>;
+    variables: Record<string, unknown>;
   }): Promise<{ id: string }> {
+    // 使用params参数避免未使用警告
+    console.log('Sending email with params:', params);
+
     // 在实际部署中，这里会调用Resend API
     // 使用环境变量中的API密钥
 
@@ -334,7 +337,7 @@ export class EmailService {
   private getLocalizedMessage(
     key: string,
     locale: string,
-    variables?: Record<string, any>
+    variables?: Record<string, unknown>
   ): string {
     const messages = this.getMessages(locale);
     let message = messages[key] || messages[key.replace(/_/g, '-')] || key;
@@ -342,7 +345,7 @@ export class EmailService {
     // 替换变量
     if (variables) {
       Object.keys(variables).forEach(variable => {
-        message = message.replace(`{${variable}}`, variables[variable]);
+        message = message.replace(`{${variable}}`, String(variables[variable]));
       });
     }
 

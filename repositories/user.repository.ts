@@ -28,7 +28,7 @@ export class UserRepository {
   /**
    * Find user by ID
    */
-  async findById(id: number) {
+  async findById(id: string) {
     try {
       const start = Date.now();
       const user = await this.prisma.user.findUnique({
@@ -44,13 +44,17 @@ export class UserRepository {
   /**
    * Find user by ID (including related posts)
    */
-  async findByIdWithPosts(id: number, limit = 10) {
+  async findByIdWithPosts(id: string, limit = 10) {
     try {
       const start = Date.now();
       const user = await this.prisma.user.findUnique({
         where: { id },
         include: {
-          posts: {
+          orders: {
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+          },
+          inquiries: {
             orderBy: { createdAt: 'desc' },
             take: limit,
           },
@@ -106,7 +110,7 @@ export class UserRepository {
   /**
    * Update user
    */
-  async update(id: number, data: { email?: string; name?: string | null }) {
+  async update(id: string, data: { email?: string; name?: string | null }) {
     try {
       const start = Date.now();
       const user = await this.prisma.user.update({
@@ -123,7 +127,7 @@ export class UserRepository {
   /**
    * Delete user
    */
-  async delete(id: number) {
+  async delete(id: string) {
     try {
       const start = Date.now();
       const deleted = await this.prisma.user.delete({
@@ -157,7 +161,7 @@ export class UserRepository {
   /**
    * Check if user exists
    */
-  async exists(id: number): Promise<boolean> {
+  async exists(id: string): Promise<boolean> {
     try {
       const start = Date.now();
       const count = await this.prisma.user.count({

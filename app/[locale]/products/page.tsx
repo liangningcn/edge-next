@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+// import Image from 'next/image';
 import { Link } from '@/components/Link';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
@@ -146,16 +147,17 @@ export default function ProductsPage() {
               className="bg-white rounded-lg shadow-md overflow-hidden border hover:shadow-lg transition"
             >
               <div className="h-48 bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="h-32 w-32 object-contain"
-                  onError={e => {
-                    // 图片加载失败时显示占位符
-                    e.currentTarget.src =
-                      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIGZpbGw9IiNlNWU1ZTUiLz4KICA8cGF0aCBkPSJNNjQgMzJDNzQuOTI4OCAzMiA4My43NTQ4IDQwLjgyNDMgODMuNzU0OCA1MS43NTQ4QzgzLjc1NDggNjIuNjg1MyA3NC45Mjg4IDcxLjUwOTQgNjQgNzEuNTA5NEM1My4wNjkzIDcxLjUwOTQgNDQuMjQ1MiA2Mi42ODUzIDQ0LjI0NTIgNTEuNzU0OEM0NC4yNDUyIDQwLjgyNDMgNTMuMDY5MyAzMiA2NCAzMloiIGZpbGw9IiM5OTk5OTkiLz4KICA8cGF0aCBkPSJNNDggOTZINjRINjRIMTExLjUwOUMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjUwOSA5NkMxMTEuNTA5IDk2IDExMS41MDkgOTYgMTExLjTA5IDk2WiIgZmlsbD0iIzk5OTk5OSIvPgo8L3N2Zz4K';
+                <div
+                  className="h-32 w-32 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500"
+                  style={{
+                    backgroundImage: `url(${product.image})`,
+                    backgroundSize: 'contain',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
                   }}
-                />
+                >
+                  {!product.image && <span className="text-sm">产品图片</span>}
+                </div>
               </div>
               <div className="p-4">
                 <span className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded">

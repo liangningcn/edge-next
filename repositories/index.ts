@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { UserRepository } from './user.repository';
-import { PostRepository } from './post.repository';
+// import { PostRepository } from './post.repository';
 
 /**
  * Repository Factory
@@ -8,7 +8,7 @@ import { PostRepository } from './post.repository';
  */
 export class RepositoryFactory {
   private userRepo?: UserRepository;
-  private postRepo?: PostRepository;
+  // private postRepo?: PostRepository;
 
   constructor(private prisma: PrismaClient) {}
 
@@ -25,12 +25,12 @@ export class RepositoryFactory {
   /**
    * Get Post Repository
    */
-  get posts(): PostRepository {
-    if (!this.postRepo) {
-      this.postRepo = new PostRepository(this.prisma);
-    }
-    return this.postRepo;
-  }
+  // get posts(): PostRepository {
+  //   if (!this.postRepo) {
+  //     this.postRepo = new PostRepository(this.prisma);
+  //   }
+  //   return this.postRepo;
+  // }
 }
 
 /**
@@ -42,4 +42,4 @@ export function createRepositories(prisma: PrismaClient): RepositoryFactory {
 
 // Export all repositories
 export { UserRepository } from './user.repository';
-export { PostRepository } from './post.repository';
+// export { PostRepository } from './post.repository';

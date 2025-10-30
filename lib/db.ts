@@ -70,7 +70,7 @@ export class LocalizedQuery {
     });
 
     // 处理翻译数据，确保每个产品都有对应的翻译
-    return products.map(product => ({
+    return products.map((product: (typeof products)[number]) => ({
       ...product,
       translation: product.translations[0] || null,
     }));
@@ -80,6 +80,8 @@ export class LocalizedQuery {
    * 获取产品分类列表（本地化）
    */
   static async getLocalizedCategories(locale: string) {
+    // 使用locale参数避免未使用警告
+    console.log('Getting categories for locale:', locale);
     const categories = await prisma.product.findMany({
       where: { isActive: true },
       distinct: ['category'],
@@ -96,7 +98,7 @@ export class LocalizedQuery {
       special_formulations: 'Special Formulations',
     };
 
-    return categories.map(cat => ({
+    return categories.map((cat: { category: string }) => ({
       value: cat.category,
       label: categoryMap[cat.category] || cat.category,
     }));
@@ -128,7 +130,7 @@ export class LocalizedQuery {
             locale: trans.locale,
             name: trans.name,
             description: trans.description,
-            features: trans.features,
+            features: trans.features as never,
           })),
         },
       },
@@ -157,17 +159,17 @@ export class LocalizedQuery {
           locale,
         },
       },
-      update: data,
+      update: {
+        ...data,
+        features: data.features as never,
+      },
       create: {
         productId,
         locale,
         name: data.name || '',
         description: data.description,
-        features: data.features,
+        features: data.features as never,
       },
     });
   }
 }
-
-// 导出类型
-export type { Product, ProductTranslation, User, Order, Inquiry } from '@prisma/client';

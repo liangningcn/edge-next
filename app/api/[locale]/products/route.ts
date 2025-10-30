@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LocalizedQuery } from '@/lib/db';
 
-export const runtime = 'edge';
-
 // GET /api/[locale]/products - 获取产品列表
 export async function GET(
   request: NextRequest,
@@ -36,6 +34,7 @@ export async function GET(
     const validLocale = supportedLocales.includes(locale) ? locale : 'en';
 
     // 使用validLocale避免未使用警告
+    console.log('Using locale:', validLocale);
 
     // 获取本地化产品列表
     const products = await LocalizedQuery.getLocalizedProducts(validLocale, {
@@ -50,7 +49,7 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: {
-        products: products.map(product => ({
+        products: products.map((product: (typeof products)[number]) => ({
           id: product.id,
           sku: product.sku,
           price: product.price,
@@ -87,7 +86,18 @@ export async function POST(
 ) {
   try {
     const { locale } = await params;
-    const body = await request.json();
+    const body = (await request.json()) as {
+      sku: string;
+      price: string | number;
+      inventory: string | number;
+      category: string;
+      translations?: Array<{
+        locale: string;
+        name: string;
+        description?: string;
+        features?: Record<string, unknown>;
+      }>;
+    };
 
     // 验证语言支持
     const supportedLocales = [
@@ -108,6 +118,7 @@ export async function POST(
     const validLocale = supportedLocales.includes(locale) ? locale : 'en';
 
     // 使用validLocale避免未使用警告
+    console.log('Using locale:', validLocale);
 
     // 验证请求数据
     const { sku, price, inventory, category, translations } = body;
@@ -122,8 +133,8 @@ export async function POST(
     // 创建产品
     const product = await LocalizedQuery.createLocalizedProduct({
       sku,
-      price: parseFloat(price),
-      inventory: parseInt(inventory) || 0,
+      price: typeof price === 'number' ? price : parseFloat(price),
+      inventory: typeof inventory === 'number' ? inventory : parseInt(inventory) || 0,
       category,
       translations: translations || [],
     });

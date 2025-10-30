@@ -30,7 +30,12 @@ export async function POST(
     const validLocale = supportedLocales.includes(locale) ? locale : 'en';
 
     // 获取请求数据
-    const body = await request.json();
+    const body = (await request.json()) as {
+      to: string | string[];
+      templateType: string;
+      variables?: Record<string, unknown>;
+      subject?: string;
+    };
     const { to, templateType, variables, subject } = body;
 
     // 验证必填字段

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LocalizedQuery, prisma } from '@/lib/db';
 
-export const runtime = 'edge';
-
 // GET /api/[locale]/products/[id] - 获取单个产品详情
 export async function GET(
   request: NextRequest,
@@ -10,9 +8,23 @@ export async function GET(
 ) {
   try {
     const { locale, id } = await params;
-    
+
     // 验证语言支持
-    const supportedLocales = ["en", "de", "ja", "fr", "th", "es", "ru", "pt", "it", "nl", "pl", "ko", "id"];
+    const supportedLocales = [
+      'en',
+      'de',
+      'ja',
+      'fr',
+      'th',
+      'es',
+      'ru',
+      'pt',
+      'it',
+      'nl',
+      'pl',
+      'ko',
+      'id',
+    ];
     const validLocale = supportedLocales.includes(locale) ? locale : 'en';
 
     // 获取产品信息
@@ -20,30 +32,24 @@ export async function GET(
       where: { id },
       include: {
         translations: {
-          where: { 
-            OR: [
-              { locale: validLocale },
-              { locale: 'en' }
-            ]
+          where: {
+            OR: [{ locale: validLocale }, { locale: 'en' }],
           },
           orderBy: {
-            locale: 'desc'
-          }
-        }
-      }
+            locale: 'desc',
+          },
+        },
+      },
     });
 
     if (!product) {
-      return NextResponse.json(
-        { success: false, error: 'Product not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
     }
 
     // 获取相关产品（同分类）
     const relatedProducts = await LocalizedQuery.getLocalizedProducts(validLocale, {
       category: product.category,
-      limit: 4
+      limit: 4,
     });
 
     const productTranslation = product.translations[0];
@@ -63,27 +69,23 @@ export async function GET(
           features: productTranslation?.features || {},
           images: [
             `https://image.topqfiller.com/products/${product.sku.toLowerCase()}.webp`,
-            `https://image.topqfiller.com/products/${product.sku.toLowerCase()}1.webp`
+            `https://image.topqfiller.com/products/${product.sku.toLowerCase()}1.webp`,
           ],
           createdAt: product.createdAt,
-          updatedAt: product.updatedAt
+          updatedAt: product.updatedAt,
         },
-        relatedProducts: relatedProducts.map(p => ({
+        relatedProducts: relatedProducts.map((p: (typeof relatedProducts)[number]) => ({
           id: p.id,
           sku: p.sku,
           price: p.price,
           name: p.translation?.name || 'Product Name',
-          image: `https://image.topqfiller.com/products/${p.sku.toLowerCase()}.webp`
-        }))
-      }
+          image: `https://image.topqfiller.com/products/${p.sku.toLowerCase()}.webp`,
+        })),
+      },
     });
-
   } catch (error) {
     console.error('Error fetching product:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch product' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to fetch product' }, { status: 500 });
   }
 }
 
@@ -94,10 +96,34 @@ export async function PUT(
 ) {
   try {
     const { locale, id } = await params;
-    const body = await request.json();
+    const body = (await request.json()) as {
+      price?: string | number;
+      inventory?: string | number;
+      category?: string;
+      isActive?: boolean;
+      translation?: {
+        name?: string;
+        description?: string;
+        features?: Record<string, unknown>;
+      };
+    };
 
     // 验证语言支持
-    const supportedLocales = ["en", "de", "ja", "fr", "th", "es", "ru", "pt", "it", "nl", "pl", "ko", "id"];
+    const supportedLocales = [
+      'en',
+      'de',
+      'ja',
+      'fr',
+      'th',
+      'es',
+      'ru',
+      'pt',
+      'it',
+      'nl',
+      'pl',
+      'ko',
+      'id',
+    ];
     const validLocale = supportedLocales.includes(locale) ? locale : 'en';
 
     const { price, inventory, category, isActive, translation } = body;
@@ -106,11 +132,15 @@ export async function PUT(
     const updatedProduct = await prisma.product.update({
       where: { id },
       data: {
-        ...(price !== undefined && { price: parseFloat(price) }),
-        ...(inventory !== undefined && { inventory: parseInt(inventory) }),
+        ...(price !== undefined && {
+          price: typeof price === 'number' ? price : parseFloat(price),
+        }),
+        ...(inventory !== undefined && {
+          inventory: typeof inventory === 'number' ? inventory : parseInt(inventory),
+        }),
         ...(category && { category }),
-        ...(isActive !== undefined && { isActive })
-      }
+        ...(isActive !== undefined && { isActive }),
+      },
     });
 
     // 更新翻译信息
@@ -118,15 +148,14 @@ export async function PUT(
       await LocalizedQuery.updateProductTranslation(id, validLocale, {
         name: translation.name,
         description: translation.description,
-        features: translation.features
+        features: translation.features,
       });
     }
 
     return NextResponse.json({
       success: true,
-      data: updatedProduct
+      data: updatedProduct,
     });
-
   } catch (error) {
     console.error('Error updating product:', error);
     return NextResponse.json(
@@ -147,14 +176,13 @@ export async function DELETE(
     // 软删除：将产品标记为不活跃
     await prisma.product.update({
       where: { id },
-      data: { isActive: false }
+      data: { isActive: false },
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Product deleted successfully'
+      message: 'Product deleted successfully',
     });
-
   } catch (error) {
     console.error('Error deleting product:', error);
     return NextResponse.json(
